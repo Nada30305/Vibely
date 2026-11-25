@@ -1,5 +1,4 @@
-
-const User = require('../models/User');
+const User = require('../model/user');
 const bcrypt = require('bcryptjs');
 
 // Register new user
@@ -52,5 +51,66 @@ const register = async (req, res) => {
         });
     }
 };
+// Login user
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-module.exports = { register };
+        // Check required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                message: 'Email and password are required'
+            });
+        }
+
+        // Find user by email
+        const user = await User.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Compare password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Generate JWT token
+        const jwt = require('jsonwebtoken');
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            'VIBELY_SECRET_KEY',
+            { expiresIn: '1d' }
+        );
+
+        res.status(200).json({
+    message: 'Login successful!',
+    token,
+    user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+    }
+});
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: 'Server error'
+        });
+    }
+};
+
+
+module.exports = { register, login };
