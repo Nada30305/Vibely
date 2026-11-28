@@ -1,10 +1,13 @@
+
 {
-  "name": "campus_tech_event_hub",
+  "name": "vibely",
   "version": "1.0.0",
-  "description": "",
+  "description": "Vibely Campus Tech Event and Ticketing Hub",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
